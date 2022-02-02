@@ -47,7 +47,7 @@ const sendMessage = function(userName, phoneNumber, roomUrl){
         "address": `tel:+225${phoneNumber}`,
         "senderAddress": `tel:+225${process.env.devPhoneNumber}`,
         "outboundSMSTextMessage": {
-          "message": `Bienvenue ${userName} sur notre application de chat. Le lien vers votre room est : http://http://localhost:3000/${roomUrl}`
+          "message": `Bienvenue ${userName} sur notre application de chat. Le lien vers votre room est : ${process.env.platformURL}/${roomUrl}`
         }
       }
     },
@@ -66,11 +66,11 @@ const sendMessage = function(userName, phoneNumber, roomUrl){
   });
 }
 
-refreshToken().then((res) => {
+/*refreshToken().then((res) => {
   console.log('Génération du token de base.');
   orangeApiSmsToken.time = (new Date().getTime());
   console.log(orangeApiSmsToken);
-});
+});*/
 
 
 app.set("view engine", "ejs");
@@ -94,7 +94,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("join-room", (roomId, userId, userName, phoneNumber) => {
-    sendMessage(userName, phoneNumber, roomId);
+    //sendMessage(userName, phoneNumber, roomId);
 
     socket.join(roomId);
 
