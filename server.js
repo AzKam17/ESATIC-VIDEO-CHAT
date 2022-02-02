@@ -5,11 +5,23 @@ const { Console } = require("console");
 var app = express();
 var http = require("http").createServer(app);
 var io = require("socket.io")(http);
+const fs = require("fs");
+const nodemailer = require("nodemailer");
+const ejs = require("ejs");
 
 let orangeApiSmsToken = {
   token: null,
   time: new Date().getTime()
 }
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  auth: {
+      user: `${process.env.gmailEmail}`,
+      pass: `${process.env.gmailPassword}`
+  }
+});
 
 const refreshToken = async function(){
   let tokenToReturn = await axios.post(
@@ -25,7 +37,7 @@ const refreshToken = async function(){
   orangeApiSmsToken.token = tokenToReturn.data.access_token;
 }
 
-const sendMessage = function(userName, phoneNumber, roomUrl){
+const sendMessage = function(userName, phoneNumber, roomUrl, userMail){
   const tempsExpiration = orangeApiSmsToken.time + 3600;
   const tempsActuel = new Date().getTime();
 
@@ -60,10 +72,37 @@ const sendMessage = function(userName, phoneNumber, roomUrl){
   )
   .then(function (response) {
       console.log(response.data);
+  
+      console.log(`Envoi du message SMS réussi de connexion de base à ${phoneNumber} pour la room ${roomUrl}.`);
   })
   .catch(function (error) {
     console.log(error.response.data);
   });
+
+  
+  console.log(`Envoi du message mail de connexion de base à ${phoneNumber} pour la room ${userMail}.`);
+  const data = ejs.renderFile("./views/mail.ejs", { lienPlatform: `https://esatic-video-chat.herokuapp.com/${roomUrl}` }, (err, data) => {
+    if(err){
+        console.log(err)
+    }else{
+        const mainOptions = {
+            from: '"Tester" ESATIC Video Chat',
+            to: `${userMail}`,
+            subject: 'Bienvenue sur notre plateforme!',
+            html: data
+          };
+          
+          transporter.sendMail(mainOptions, (err, info) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(`Envoi du message mail reussi de connexion de base à ${phoneNumber} pour la room ${userMail}. - ${info.response}`);
+            }
+          });
+    }
+});
+
+
 }
 
 refreshToken().then((res) => {
@@ -93,8 +132,8 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("image", userId, image);
   });
 
-  socket.on("join-room", (roomId, userId, userName, phoneNumber) => {
-    sendMessage(userName, phoneNumber, roomId);
+  socket.on("join-room", (roomId, userId, userName, phoneNumber, userMail) => {
+    sendMessage(userName, phoneNumber, roomId, userMail);
 
     socket.join(roomId);
 

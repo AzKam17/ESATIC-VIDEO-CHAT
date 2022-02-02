@@ -73,8 +73,9 @@ function takePicture() {
 
 let user = prompt("Veuillez entrer votre nom");
 let phoneNumber = prompt('Veuillez entrer votre numéro de téléphone : ');
+let userMail = prompt('Veuillez entrer votre adresse mail : ');
 
-socket.emit("join-room", ROOM_ID, socket.id, user, phoneNumber);
+socket.emit("join-room", ROOM_ID, socket.id, user, phoneNumber, userMail);
 
 socket.on("image", (userId, image) => {
   if (!imageStreams.hasOwnProperty(userId)) {
