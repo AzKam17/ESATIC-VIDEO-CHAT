@@ -47,7 +47,7 @@ const sendMessage = function(userName, phoneNumber, roomUrl){
         "address": `tel:+225${phoneNumber}`,
         "senderAddress": `tel:+225${process.env.devPhoneNumber}`,
         "outboundSMSTextMessage": {
-          "message": `Bienvenue ${userName} sur notre application de chat. Le lien vers votre room est : http://http://localhost:3000/${roomUrl}`
+          "message": `Bienvenue ${userName} sur notre application de chat. Le lien vers votre room est : https://esatic-video-chat.herokuapp.com/${roomUrl}`
         }
       }
     },
