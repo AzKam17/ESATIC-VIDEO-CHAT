@@ -133,7 +133,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("join-room", (roomId, userId, userName, phoneNumber, userMail) => {
-    sendMessage(userName, phoneNumber, roomId, userMail);
+    if(!(userName in phoneNumber)){
+      phoneNumber[userName] = phoneNumber;
+      sendMessage(userName, phoneNumber, roomId, userMail);
+    }
+
 
     socket.join(roomId);
 
