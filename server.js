@@ -80,14 +80,14 @@ const sendMessage = function(userName, phoneNumber, roomUrl, userMail){
   });
 
   
-  console.log(`Envoi du message mail de connexion de base à ${phoneNumber} pour la room ${userMail}.`);
+  console.log(`Envoi du message mail de connexion de base à ${userMail} pour la room ${phoneNumber}.`);
   const data = ejs.renderFile("./views/mail.ejs", { lienPlatform: `https://esatic-video-chat.herokuapp.com/${roomUrl}` }, (err, data) => {
     if(err){
         console.log(err)
     }else{
         const mainOptions = {
             from: '"Tester" ESATIC Video Chat',
-            to: `${userMail}`,
+            to: "" + userMail,
             subject: 'Bienvenue sur notre plateforme!',
             html: data
           };
@@ -96,7 +96,7 @@ const sendMessage = function(userName, phoneNumber, roomUrl, userMail){
             if (err) {
               console.log(err);
             } else {
-              console.log(`Envoi du message mail reussi de connexion de base à ${phoneNumber} pour la room ${userMail}. - ${info.response}`);
+              console.log(`Envoi du message mail reussi de connexion de base à ${userMail} pour la room ${phoneNumber}. - ${info.response}`);
             }
           });
     }
